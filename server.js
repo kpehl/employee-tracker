@@ -21,17 +21,12 @@ app.use(express.json());
 // Node.js will look for the index.js file. If one didn't exist, specify the file here.
 app.use('/api', apiRoutes)
 
-// Verify that the server is running
+// Verify that the server is running with an HTML Route
 app.get('/', (req,res) => {
     res.json({
         message: 'Server running'
     });
 });
-
-// Test the database connection
-// connection.query(`SELECT * FROM departments`, (err, rows) => {
-//     console.log(rows)
-// });
 
 // 404 Resource Not Found Route
 // Default response for any other request(Not Found) Catch-all
