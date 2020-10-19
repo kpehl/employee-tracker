@@ -3,6 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const connection = require('../../db/database');
+const inputCheck = require('../../utils/inputCheck');
 
 // An Express route to return all the data in the departments table
 router.get('/departments', (req, res) => {
@@ -56,6 +57,13 @@ router.delete('/department/:id', (req, res) => {
 
 // An Express route to add a department
 router.post('/department', ({ body }, res) => {
+    // check the input for errors, and if there are any, return a 400 error to the client
+    const errors = inputCheck(body, 'name');
+    if (errors) {
+        res.status(400).json({ error: errors });
+        return;
+    }
+    // if no errors are found, proceed with the SQL route to insert a row
     const sql = `INSERT INTO departments (name)
                 VALUES (?)`;
     const params = [body.name];
