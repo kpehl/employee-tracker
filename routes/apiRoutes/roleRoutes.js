@@ -68,4 +68,20 @@ router.post('/role', ({ body }, res) => {
     });
 });
 
+// An Express route to delete a role
+router.delete('/role/:id', (req, res) => {
+    const sql = `DELETE FROM roles WHERE id = ?`;
+    const params = [req.params.id];
+    connection.query(sql, params, function(err, result) {
+        if (err) {
+            res.status(400).json ({ error: res.message});
+            return
+        }
+        res.json({
+            message: 'successfully deleted',
+            changes: this.changes
+        });
+    });
+});
+
 module.exports = router;
