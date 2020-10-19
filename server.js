@@ -4,6 +4,8 @@
 const express = require('express');
 // Database module
 const connection = require('./db/database');
+// API Routes
+const apiRoutes = require('./routes/apiRoutes');
 
 
 // Define the port and initialize the server
@@ -14,12 +16,22 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+// Middleware to point to the API Routes folder.
+// Predefine the api prefix on the route expressions since it will be used every time.
+// Node.js will look for the index.js file. If one didn't exist, specify the file here.
+app.use('/api', apiRoutes)
+
 // Verify that the server is running
 app.get('/', (req,res) => {
     res.json({
         message: 'Server running'
     });
 });
+
+// Test the database connection
+// connection.query(`SELECT * FROM departments`, (err, rows) => {
+//     console.log(rows)
+// });
 
 // 404 Resource Not Found Route
 // Default response for any other request(Not Found) Catch-all
