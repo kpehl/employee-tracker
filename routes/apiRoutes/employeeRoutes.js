@@ -23,14 +23,15 @@ router.get('/rawemployees', (req, res) => {
 
 // An Express route to return data in the employee table joined with the department and role tables
 router.get('/employees', (req, res) => {
-    const sql = `SELECT employee.id AS employee_id,
-                employee.first_name AS first_name,
-                employee.last_name AS last_name,
+    const sql = `SELECT e.id AS employee_id,
+                e.first_name AS first_name,
+                e.last_name AS last_name,
                 role.title AS title,
-                role.salary AS salary
-                FROM employee
-                LEFT JOIN role
-                ON employee.role_id = role.id`;
+                role.salary AS salary,
+                CONCAT(m.first_name, ' ', m.last_name) AS manager_name
+                FROM employee e
+                LEFT JOIN role ON e.role_id = role.id
+                LEFT JOIN employee m ON m.id = e.manager_id`;
     const params = [];
     connection.query(sql, params, (err, rows) => {
         if (err) {
