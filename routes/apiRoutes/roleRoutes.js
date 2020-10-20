@@ -1,11 +1,11 @@
-// Routes for the Roles Table
+// Routes for the Role Table
 // Dependencies
 const express = require('express');
 const router = express.Router();
 const connection = require('../../db/database');
 const inputCheck = require('../../utils/inputCheck');
 
-// An Express route to return all the raw data in the roles table
+// An Express route to return all the raw data in the role table
 router.get('/rawroles', (req, res) => {
     const sql = `SELECT * FROM role`;
     const params = [];
@@ -21,7 +21,7 @@ router.get('/rawroles', (req, res) => {
     });
 });
 
-// An Express route to return data in the roles table joined with the department table
+// An Express route to return data in the role table joined with the department table
 router.get('/roles', (req, res) => {
     const sql = `SELECT role.title AS title,
                 role.id AS role_id,
