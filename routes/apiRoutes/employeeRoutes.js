@@ -89,7 +89,7 @@ router.delete('/employee/:id', (req, res) => {
 });
 
 // An Express route to update an employee's manager
-router.put('/employee/:id', (req, res) => {
+router.put('/employee_manager/:id', (req, res) => {
     // check to make sure a party_id was provided
     const errors = inputCheck(req.body, 'manager_id');
     if (errors) {
@@ -100,6 +100,31 @@ router.put('/employee/:id', (req, res) => {
     const sql = `UPDATE employee SET manager_id = ?
                 WHERE id = ?`;
     const params = [req.body.manager_id, req.params.id];
+    connection.query(sql, params, function(err, result) {
+        if (err) {
+            res.status(400).json({ error: err.message });
+            return;
+        }
+        res.json({
+            message: 'success',
+            data: req.body,
+            changes: this.changes
+        });
+    });
+});
+
+// An Express route to update an employee's role
+router.put('/employee_role/:id', (req, res) => {
+    // check to make sure a party_id was provided
+    const errors = inputCheck(req.body, 'role_id');
+    if (errors) {
+        res.status(400).json({ error: errors });
+        return;
+    }
+    // if an id was provided, update the database
+    const sql = `UPDATE employee SET role_id = ?
+                WHERE id = ?`;
+    const params = [req.body.role_id, req.params.id];
     connection.query(sql, params, function(err, result) {
         if (err) {
             res.status(400).json({ error: err.message });
