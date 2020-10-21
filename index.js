@@ -59,13 +59,22 @@ const sqlFunctionTests = () => {
 
 // A function to direct the user depending on their choice of action
 const actionChoice = () => {
+    // let rolesQuery = [];
+    // connection.query('SELECT id, title FROM role',
+    //     function(err, results) {
+    //         rolesQuery = rows;
+    //     });
+    // console.log(rolesQuery)
+    console.log('--------------------------------------------')
     return inquirer.prompt([
+        // View, Add, or Update
         {
             type: 'list',
             name: 'actionChoice',
             message: 'Would you like to:',
             choices: ['View', 'Add', 'Update']
         },
+        // View All Departments, View All Roles, or View All Employees
         {
             type: 'list',
             name: 'viewChoices',
@@ -73,6 +82,7 @@ const actionChoice = () => {
             choices: ['View All Departments', 'View All Roles', 'View All Employees'],
             when: (answers) => answers.actionChoice === 'View'
         },
+        // Add a Department, Add a Role, or Add an Employee
         {
             type: 'list',
             name: 'addChoices',
@@ -80,18 +90,45 @@ const actionChoice = () => {
             choices: ['Add a Department', 'Add a Role', 'Add an Employee'],
             when: (answers) => answers.actionChoice === 'Add'
         },
+        // Update an Employee's Role or Manage
         {
             type: 'list',
             name: 'updateChoices',
             message: 'What would you like to update?',
             choices: ['Employee Role', 'Employee Manager'],
             when: (answers) => answers.actionChoice === 'Update'
+        },
+        // Add an Employee
+        {
+            type: 'input',
+            name: 'employeeFirstName',
+            message: "Enter employee's first name:",
+            when: (answers) => answers.addChoices === 'Add an Employee'
+        },
+        {
+            type: 'input',
+            name: 'employeeLastName',
+            message: "Enter employee's last name:",
+            when: (answers) => answers.addChoices === 'Add an Employee'
+        },
+        {
+            type: 'list',
+            name: 'employeeRole',
+            message: "Choose the employee's role:",
+            choices: ['1','2','3','4', '5', '6', '7'],
+            // choices: rolesArray,
+            when: (answers) => answers.addChoices === 'Add an Employee'
         }
     ])
     .then( answer => {
-        if (answer.viewChoices === 'View All Departments') {queryDepartments()}
-        else if (answer.viewChoices === 'View All Roles') {rolesDepartments()}
-        else if (answer.viewChoices === 'View All Employees') {allEmployees()}
+        if (answer.actionChoice === 'View' && answer.viewChoices === 'View All Departments') {queryDepartments()}
+        else if (answer.actionChoice === 'View' && answer.viewChoices === 'View All Roles') {rolesDepartments()}
+        else if (answer.actionChoice === 'View' && answer.viewChoices === 'View All Employees') {allEmployees()}
+        else if (answer.actionChoice === 'Add' && answer.addChoices === 'Add an Employee') {
+            const newEmployee = {'first_name': answer.employeeFirstName, 'last_name': answer.employeeLastName, 'role_id': answer.employeeRole};
+            console.log(newEmployee);
+            addEmployee(newEmployee);
+        }
         else {console.log('more coming soon')}
     })
     .then(promptContinue)
@@ -108,9 +145,11 @@ const promptContinue = () => {
     ])
     .then((answer) => {
         if (answer.quitOrContinue === true) {actionChoice()}
-        else {endConnection()}
-        console.log('--------------------------------------------------------------------------')
-        console.log('---------------------Press Ctrl C to Exit---------------------------------')
-        console.log('--------------------------------------------------------------------------')
+        else {
+            endConnection()
+            console.log('--------------------------------------------------------------------------')
+            console.log('---------------------Press Ctrl C to Exit---------------------------------')
+            console.log('--------------------------------------------------------------------------')
+        }
     })
 }
