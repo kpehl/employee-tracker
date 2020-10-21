@@ -12,9 +12,10 @@ const connection = mysql.createConnection({
   database: 'employee_trackerDB'
 });
 
-connection.connect(err => {
-  if (err) throw err;
-  console.log('connected as id ' + connection.threadId);
-});
+// Open a connection when running in API and server mode; commented out for CLI mode
+// connection.connect(err => {
+//   if (err) throw err;
+//   console.log('connected as id ' + connection.threadId);
+// });
 
 module.exports = connection;
