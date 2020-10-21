@@ -7,16 +7,12 @@ const inputCheck = require('../utils/inputCheck');
 const rawRoles = (req, res) => {
     const sql = `SELECT * FROM role`;
     const params = [];
-    connection.query(sql, params, (err, rows) => {
-        if (err) {
-            res.status(500).json({ error: err.message});
-            return;
-        }
-        res.json({
-            message: 'success',
-            data: rows
-        });
-    });
+    connection.promise().query(sql, params)
+        .then( ([rows, fields]) => {
+            console.table(rows)
+        })
+        .catch(console.log)
+        .then ( () => connection.end);
 };
 
 // A function to return data in the role table joined with the department table
@@ -29,57 +25,38 @@ const rolesDepartments = (req, res) => {
                 LEFT JOIN department
                 ON role.department_id = department.id`;
     const params = [];
-    connection.query(sql, params, (err, rows) => {
-        if (err) {
-            res.status(500).json({ error: err.message});
-            return;
-        }
-        res.json({
-            message: 'success',
-            data: rows
-        });
-    });
+    connection.promise().query(sql, params)
+        .then( ([rows, fields]) => {
+            console.table(rows)
+        })
+        .catch(console.log)
+        .then ( () => connection.end);
 };
 
 // A function to add a role
-const addRole = ({ body }, res) => {
-    // check the input for errors, and if there are any, return a 400 error to the client
-    const errors = inputCheck(body, 'title', 'salary', 'department_id');
-    if (errors) {
-        res.status(400).json({ error: errors });
-        return;
-    }
-    // if no errors are found, proceed with the SQL route to insert a row
+const addRole = ( body ) => {
+    console.log(body)
     const sql = `INSERT INTO role (title, salary, department_id)
                 VALUES (?, ?, ?)`;
-    const params = [body.title, body.salary, body.department_id];
-    connection.query(sql, params, function(err, result) {
-        if (err) {
-            res.status(400).json({ error: err.message });
-            return;
-        }
-        res.json({
-            message: 'success',
-            data: body,
-            id: this.lastID
-        });
-    });
+    const params = [body['title'], body['salary'], body['department_id']];
+    connection.promise().query(sql, params)
+    .then( ([rows, fields]) => {
+        console.table(`${body['title']} role added`);
+    })
+    .catch(console.log)
+    .then ( () => connection.end)
 };
 
 // A function to delete a role
-const deleteRole = (req, res) => {
+const deleteRole = (id) => {
     const sql = `DELETE FROM role WHERE id = ?`;
-    const params = [req.params.id];
-    connection.query(sql, params, function(err, result) {
-        if (err) {
-            res.status(400).json ({ error: res.message});
-            return
-        }
-        res.json({
-            message: 'successfully deleted',
-            changes: this.changes
-        });
-    });
+    const params = [id];
+    connection.promise().query(sql, params)
+    .then( ([rows, fields]) => {
+        console.table(`Role ${id} deleted`);
+    })
+    .catch(console.log)
+    .then ( () => connection.end)
 };
 
 module.exports = { rawRoles, rolesDepartments, addRole, deleteRole };

@@ -13,7 +13,7 @@ const { rawRoles, rolesDepartments, addRole, deleteRole } = require('./queries/r
 const { end } = require('./db/database');
 
 
-const init = () => {
+const sqlFunctionTests = () => {
     // Department Query Tests
     queryDepartments();
     queryDepartment(3);
@@ -22,12 +22,31 @@ const init = () => {
     const newDepartment = 'Morale';
     addDepartment(newDepartment);
     queryDepartments();
-    endConnection();
-}
+    // Role Query Tests
+    rawRoles();
+    rolesDepartments();
+    const newRole = ['Legal Aide', 75000, 4];
+    const newRoleObj = {'title': 'Legal Aide', 'salary': 75000, 'department_id': 4};
+    addRole(newRoleObj)
+    deleteRole(2);
+    rolesDepartments();
+    // Employee Query Tests
+    rawEmployeeData();
+    allEmployees();
+    const newEmployee = {'first_name': 'Tammar', 'last_name': 'Galal', 'role_id': 4};
+    addEmployee(newEmployee);
+    deleteEmployee(3);
+    allEmployees();
+    const updateManagerObj = {'employee_id': 1, 'manager_id': 6};
+    updateManager(updateManagerObj);
+    const updateRoleObj = {'employee_id': 1, 'role_id': 7}
+    updateRole(updateRoleObj);
+    allEmployees();
+};
 
 const endConnection = () => {
     connection.end;
     console.log('connection ended');
 }
 
-init();
+sqlFunctionTests();
