@@ -40,15 +40,15 @@ const allEmployees = (req, res) => {
 // A function to add an employee
 const addEmployee = (body) => {
     // check the input for errors, and if there are any, return a 400 error to the client; manager may be null
-    const errors = inputCheck(body, 'first_name', 'last_name', 'role_id');
+    const errors = inputCheck(body, 'first_name', 'last_name', 'role_id', 'manager_id');
     if (errors) {
         console.log(errors)
         return;
     }
     // if no errors are found, proceed with the SQL route to insert a row
-    const sql = `INSERT INTO employee (first_name, last_name, role_id)
-                VALUES (?, ?, ?)`;
-    const params = [body['first_name'], body['last_name'], body['role_id']];
+    const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+                VALUES (?, ?, ?, ?)`;
+    const params = [body['first_name'], body['last_name'], body['role_id'], body['manager_id']];
     connection.promise().query(sql, params)
         .then( ([rows, fields]) => {
             // console.table(`${body['first_name']} ${body['last_name']} added`);

@@ -124,7 +124,7 @@ const promptContinue = () => {
 
 // A function for the add employee prompts
 const addEmployeePrompts = () => {
-    // get the role titles from the database
+    // Get the role titles and ids and the manager names and employee ids from the database
     connection.query(`SELECT id as role_id, 
                     title as role_title, 
                     null as manager_id, 
@@ -138,9 +138,14 @@ const addEmployeePrompts = () => {
                     FROM employee`,
                      function (err, rows) {
         if (err) console.log(err);
+        // Set up the lists for the prompt, trimming out the null values from the merged query
         const untrimmedRoleList = rows.map(Object => Object.role_title);
         const roleList = untrimmedRoleList.filter(element => element != null);
-    // if there are no errors, prompt the user for the new employee information
+        const untrimmedManagerList = rows.map(Object => Object.manager_name);
+        const managerList = untrimmedManagerList.filter(element => element != null);
+        // Add an option for no manager
+        managerList.unshift('None'); 
+    // Prompt the user for the new employee information
     inquirer.prompt ([
         // Add an Employee
         {
@@ -158,12 +163,32 @@ const addEmployeePrompts = () => {
             name: 'employeeRole',
             message: "Select the employee's role:",
             choices: roleList
+        },
+        {
+            type: 'list',
+            name: 'managerName',
+            message: "Select the employee's manager",
+            choices: managerList
         }
     ])
     .then(answers => {
+        // find the role from the prompt in the query table
         let roleRow = rows.find(Object => Object.role_title === answers.employeeRole);
+        // console.log(roleRow)
+        // set the Role id from the query table
         let roleId = roleRow.role_id;
-        const newEmployee = {'first_name': answers.employeeFirstName, 'last_name': answers.employeeLastName, 'role_id': roleId}
+        // console.log(roleId)
+        // Get the manager id
+        let managerId = null;
+        if (answers.managerName === 'None') {managerId = null}
+        else {
+            managerRow = rows.find(Object => Object.manager_name === answers.managerName);
+            // console.log(managerRow)
+            managerId = managerRow.manager_id;
+        } 
+        // console.log(managerId)
+        const newEmployee = {'first_name': answers.employeeFirstName, 'last_name': answers.employeeLastName, 'role_id': roleId, 'manager_id': managerId }
+        // console.log(newEmployee)
         addEmployee(newEmployee);
         console.log(answers.employeeFirstName + ' ' + answers.employeeLastName + ' added to employee table.')
         actionChoice();
