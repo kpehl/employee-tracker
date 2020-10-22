@@ -146,12 +146,13 @@ const addEmployeePrompts = () => {
             message: "Select the employee's role:",
             choices: function() {
                 let roleList = [];
-                for (let i = 0; i < rows.length; i++) {roleList.push(rows[i].title)};
+                roleList = rows.map(Object => Object.title)
                 return roleList
             }
         }
     ])
     .then(answers => {
+        let roleID = 
         console.log(answers.employeeFirstName + answers.employeeLastName + answers.employeeRole)
         actionChoice();
     })
