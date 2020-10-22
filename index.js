@@ -10,12 +10,12 @@ const cTable = require('console.table')
 const { queryDepartments, deleteDepartment, addDepartment, queryDepartment } = require('./queries/departmentQueries');
 const { rawEmployeeData, allEmployees, addEmployee, deleteEmployee, updateManager, updateRole } = require('./queries/employeeQueries');
 const { rawRoles, rolesDepartments, addRole, deleteRole } = require('./queries/roleQueries');
+const { getMaxListeners } = require('./db/database');
 
 // Open a connection to the database
 connection.connect(err => {
     if (err) throw err;
     console.log('connected as id ' + connection.threadId);
-
     actionChoice();
   });
 
@@ -59,13 +59,9 @@ const sqlFunctionTests = () => {
 
 // A function to direct the user depending on their choice of action
 const actionChoice = () => {
-    // let rolesQuery = [];
-    // connection.query('SELECT id, title FROM role',
-    //     function(err, results) {
-    //         rolesQuery = rows;
-    //     });
-    // console.log(rolesQuery)
     console.log('--------------------------------------------')
+    let rolesArray = ['1','2','3','4', '5', '6', '7'];
+    // const rolesDisplay = connection.query(`SELECT id, title FROM roles`, function(err, rows) {console.table(rows)});
     return inquirer.prompt([
         // View, Add, or Update
         {
@@ -90,7 +86,7 @@ const actionChoice = () => {
             choices: ['Add a Department', 'Add a Role', 'Add an Employee'],
             when: (answers) => answers.actionChoice === 'Add'
         },
-        // Update an Employee's Role or Manage
+        // Update an Employee's Role or Manager
         {
             type: 'list',
             name: 'updateChoices',
@@ -111,12 +107,19 @@ const actionChoice = () => {
             message: "Enter employee's last name:",
             when: (answers) => answers.addChoices === 'Add an Employee'
         },
+        // {
+        //     type: 'list',
+        //     name: 'employeeRole',
+        //     message: "Choose the employee's role:",
+        //     choices: ['1','2','3','4'],
+        //     when: (answers) => answers.addChoices === 'Add an Employee'
+        // }
         {
-            type: 'list',
+            type: 'input',
             name: 'employeeRole',
-            message: "Choose the employee's role:",
-            choices: ['1','2','3','4', '5', '6', '7'],
-            // choices: rolesArray,
+            message: connection.query(`SELECT id, title FROM role`, function(err, rows) {
+                console.table('Enter the desired role for the employee', rows);
+            }),
             when: (answers) => answers.addChoices === 'Add an Employee'
         }
     ])
@@ -126,7 +129,7 @@ const actionChoice = () => {
         else if (answer.actionChoice === 'View' && answer.viewChoices === 'View All Employees') {allEmployees()}
         else if (answer.actionChoice === 'Add' && answer.addChoices === 'Add an Employee') {
             const newEmployee = {'first_name': answer.employeeFirstName, 'last_name': answer.employeeLastName, 'role_id': answer.employeeRole};
-            console.log(newEmployee);
+            // console.log(newEmployee);
             addEmployee(newEmployee);
         }
         else {console.log('more coming soon')}
