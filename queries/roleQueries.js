@@ -41,7 +41,7 @@ const addRole = ( body ) => {
     const params = [body['title'], body['salary'], body['department_id']];
     connection.promise().query(sql, params)
     .then( ([rows, fields]) => {
-        console.table(`${body['title']} role added`);
+        // console.table(`${body['title']} role added`);
     })
     .catch(console.log)
     .then ( () => connection.end)
@@ -53,7 +53,7 @@ const deleteRole = (id) => {
     const params = [id];
     connection.promise().query(sql, params)
     .then( ([rows, fields]) => {
-        console.table(`Role ${id} deleted`);
+        // console.table(`Role ${id} deleted`);
     })
     .catch(console.log)
     .then ( () => connection.end)

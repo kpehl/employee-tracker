@@ -51,7 +51,7 @@ const addEmployee = (body) => {
     const params = [body['first_name'], body['last_name'], body['role_id']];
     connection.promise().query(sql, params)
         .then( ([rows, fields]) => {
-            console.table(`${body['first_name']} ${body['last_name']} added`);
+            // console.table(`${body['first_name']} ${body['last_name']} added`);
         })
         .catch(console.log)
         .then ( () => connection.end);
@@ -63,7 +63,7 @@ const deleteEmployee = (id) => {
     const params = [id];
     connection.promise().query(sql, params)
         .then( ([rows, fields]) => {
-            console.table(`Employee ${id} deleted`);
+            // console.table(`Employee ${id} deleted`);
         })
         .catch(console.log)
         .then ( () => connection.end)
@@ -83,7 +83,7 @@ const updateManager = (body) => {
     const params = [body['manager_id'], body['employee_id']];
     connection.promise().query(sql, params)
         .then( ([rows, fields]) => {
-            console.table(`Employee ${body['employee_id']} manager updated`);
+            // console.table(`Employee ${body['employee_id']} manager updated`);
         })
         .catch(console.log)
         .then ( () => connection.end)
@@ -103,7 +103,7 @@ const updateRole = (body) => {
     const params = [body['role_id'], body['employee_id']];
     connection.promise().query(sql, params)
         .then( ([rows, fields]) => {
-            console.table(`Employee ${body['employee_id']} role updated`);
+            // console.table(`Employee ${body['employee_id']} role updated`);
         })
         .catch(console.log)
         .then ( () => connection.end)

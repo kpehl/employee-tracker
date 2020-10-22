@@ -152,8 +152,10 @@ const addEmployeePrompts = () => {
         }
     ])
     .then(answers => {
-        let roleID = 
-        console.log(answers.employeeFirstName + answers.employeeLastName + answers.employeeRole)
+        let roleRow = rows.find(Object => Object.title === answers.employeeRole);
+        let roleId = roleRow.id;
+        const newEmployee = {'first_name': answers.employeeFirstName, 'last_name': answers.employeeLastName, 'role_id': roleId}
+        addEmployee(newEmployee);
         actionChoice();
     })
 })

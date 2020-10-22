@@ -38,7 +38,7 @@ const deleteDepartment = (id) => {
     const params = [id];
     connection.promise().query(sql, params)
         .then( ([rows, fields]) => {
-            console.table(`department ${id} deleted`);
+            // console.table(`department ${id} deleted`);
         })
         .catch(console.log)
         .then ( () => connection.end)
@@ -51,7 +51,7 @@ const addDepartment = (name) => {
     const params = [name];
     connection.promise().query(sql, params)
     .then( ([rows, fields]) => {
-        console.table(`${name} department added`);
+        // console.table(`${name} department added`);
     })
     .catch(console.log)
     .then ( () => connection.end)
