@@ -125,9 +125,21 @@ const promptContinue = () => {
 // A function for the add employee prompts
 const addEmployeePrompts = () => {
     // get the role titles from the database
-    connection.query(`SELECT id, title FROM role`, function (err, rows) {
+    connection.query(`SELECT id as role_id, 
+                    title as role_title, 
+                    null as manager_id, 
+                    null as manager_name 
+                    from role 
+                    UNION 
+                    SELECT null as role_id, 
+                    null as role_title, 
+                    id as manager_id, 
+                    CONCAT(first_name, ' ', last_name) as manager_name 
+                    FROM employee`,
+                     function (err, rows) {
         if (err) console.log(err);
-        const roleList = rows.map(Object => Object.title)
+        const untrimmedRoleList = rows.map(Object => Object.role_title);
+        const roleList = untrimmedRoleList.filter(element => element != null);
     // if there are no errors, prompt the user for the new employee information
     inquirer.prompt ([
         // Add an Employee
@@ -149,10 +161,11 @@ const addEmployeePrompts = () => {
         }
     ])
     .then(answers => {
-        let roleRow = rows.find(Object => Object.title === answers.employeeRole);
-        let roleId = roleRow.id;
+        let roleRow = rows.find(Object => Object.role_title === answers.employeeRole);
+        let roleId = roleRow.role_id;
         const newEmployee = {'first_name': answers.employeeFirstName, 'last_name': answers.employeeLastName, 'role_id': roleId}
         addEmployee(newEmployee);
+        console.log(answers.employeeFirstName + ' ' + answers.employeeLastName + ' added to employee table.')
         actionChoice();
     })
 })
