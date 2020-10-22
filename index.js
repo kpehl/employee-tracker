@@ -127,6 +127,7 @@ const addEmployeePrompts = () => {
     // get the role titles from the database
     connection.query(`SELECT id, title FROM role`, function (err, rows) {
         if (err) console.log(err);
+        const roleList = rows.map(Object => Object.title)
     // if there are no errors, prompt the user for the new employee information
     inquirer.prompt ([
         // Add an Employee
@@ -144,11 +145,7 @@ const addEmployeePrompts = () => {
             type: 'list',
             name: 'employeeRole',
             message: "Select the employee's role:",
-            choices: function() {
-                let roleList = [];
-                roleList = rows.map(Object => Object.title)
-                return roleList
-            }
+            choices: roleList
         }
     ])
     .then(answers => {
