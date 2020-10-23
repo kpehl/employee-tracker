@@ -125,27 +125,17 @@ const actionChoice = () => {
         else if (answer.addChoices === 'Add an Employee') {
             addEmployeePrompts();
         }
+        else if (answer.updateChoices === 'Employee Role') {
+            updateEmployeeRolePrompts();
+        }
+        else if (answer.updateChoices === 'Employee Manager') {
+            updateEmployeeManagerPrompts();
+        }
         else if (answer.actionChoice === 'Exit') {
             endConnection();
         }
         else {console.log('more coming soon')}
     })
-}
-
-// A function for viewing all departments
-const viewAllDepartments = () => {
-    console.log('All Departments');
-    queryDepartments();
-}
-// A function for viewing all roles
-const viewAllRoles = () => {
-    console.log('All Roles');
-    rolesDepartments();
-}
-// A function for viewing all employees
-const viewAllEmployees = () => {
-    console.log('All Employees');
-    allEmployees();
 }
 
 // A function for the add department prompt
@@ -171,7 +161,6 @@ const addRolePrompts = () => {
     function(err, rows) {
         if (err) console.log(err);
         const departmentList = rows.map(Object => Object.department_name);
-        console.log(departmentList)
     inquirer.prompt ([
         {
             type: 'input',
@@ -275,4 +264,54 @@ const addEmployeePrompts = () => {
         actionChoice();
     })
 })
+}
+
+const updateEmployeeRolePrompts = () => {
+    // Get the role titles and ids and the employee names and employee ids from the database
+    connection.query(`SELECT id as role_id, 
+        title as role_title, 
+        null as employee_id, 
+        null as employee_name 
+        from role 
+        UNION 
+        SELECT null as role_id, 
+        null as role_title, 
+        id as employee_id, 
+        CONCAT(first_name, ' ', last_name) as employee_name 
+        FROM employee`,
+        function (err, rows) {
+    if (err) console.log(err);
+    // Set up the lists for the prompt, trimming out the null values from the merged query
+    const untrimmedRoleList = rows.map(Object => Object.role_title);
+    const roleList = untrimmedRoleList.filter(element => element != null);
+    const untrimmedEmployeeList = rows.map(Object => Object.employee_name);
+    const employeeList = untrimmedEmployeeList.filter(element => element != null);
+      inquirer.prompt ([
+          {
+              type: 'list',
+              name: 'employee',
+              message: "Select Employee:",
+              choices: employeeList
+          },
+          {
+              type: 'list',
+              name: 'role',
+              message: "Select Role:",
+              choices: roleList
+          }
+      ])
+      .then(answers => { 
+          // find the department from the prompt in the query table
+          let roleRow = rows.find(Object => Object.role_title === answers.role);
+          // set the department id from the query table
+          let roleId = roleRow.role_id;
+          // find the employee id from the table
+          let employeeRow = rows.find(Object => Object.employee_name === answers.employee);
+          let employeeId = employeeRow.employee_id;
+          const newRole = {'employee_id': employeeId, 'role_id': roleId};
+          updateRole(newRole);
+          console.log(answers.employee + ' role changed to ' + answers.role +'.')
+          actionChoice();
+      })
+  })  
 }
