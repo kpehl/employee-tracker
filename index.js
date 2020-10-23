@@ -20,8 +20,12 @@ connection.connect(err => {
 
 // A function to close the connection
 const endConnection = () => {
-    connection.end;
-    console.log('connection ended');
+    connection.end();
+    console.log('--------------------------------------------------------------------------');
+    console.log('--------------------------------------------------------------------------');
+    console.log('---------------------------Goodbye----------------------------------------');
+    console.log('--------------------------------------------------------------------------');
+    console.log('--------------------------------------------------------------------------');
 }
 
 // A function to direct the user depending on their choice of action
@@ -68,34 +72,91 @@ const actionChoice = () => {
             when: (answers) => answers.actionChoice === 'Delete'
         }
     ])
-    .then( answer => {
-        if (answer.actionChoice === 'View' && answer.viewChoices === 'View All Departments') {
+    .then( async (answer) => {
+        if (answer.viewChoices === 'View All Departments') {
             queryDepartments();
             console.log('--------------------------------------------------------------------------')
             actionChoice();
         }
-        else if (answer.actionChoice === 'View' && answer.viewChoices === 'View All Roles') {
+        else if (answer.viewChoices === 'View All Roles') {
             rolesDepartments();
             console.log('--------------------------------------------------------------------------')
             actionChoice();
         }
-        else if (answer.actionChoice === 'View' && answer.viewChoices === 'View All Employees') {
+        else if (answer.viewChoices === 'View All Employees') {
             allEmployees();
             console.log('--------------------------------------------------------------------------')
             actionChoice();
         }
-        else if (answer.actionChoice === 'Add' && answer.addChoices === 'Add an Employee') {
+        else if (answer.addChoices === 'Add a Department') {
+            addDepartmentPrompts();
+        }
+        else if (answer.addChoices === 'Add a Role') {
+            addRolePrompts();
+        }
+        else if (answer.addChoices === 'Add an Employee') {
             addEmployeePrompts();
         }
         else if (answer.actionChoice === 'Exit') {
             endConnection();
-            console.log('--------------------------------------------------------------------------')
-            console.log('---------------------Press Ctrl C to Exit---------------------------------')
-            console.log('--------------------------------------------------------------------------')
-            return;
         }
         else {console.log('more coming soon')}
     })
+}
+
+// A function for the add department prompt
+const addDepartmentPrompts = () => {
+    inquirer.prompt ([
+        {
+            type: 'input',
+            name: 'departmentName',
+            message: "Enter the department name:",
+        }
+    ])
+    .then(answers => { 
+        addDepartment(answers.departmentName);
+        console.log(answers.departmentName + ' added to department table.')
+        actionChoice();
+    })
+}
+
+// A function for the add role prompt
+const addRolePrompts = () => {
+    // get the department list
+    connection.query('SELECT id as department_id, name as department_name FROM department',
+    function(err, rows) {
+        if (err) console.log(err);
+        const departmentList = rows.map(Object => Object.department_name);
+        console.log(departmentList)
+    inquirer.prompt ([
+        {
+            type: 'input',
+            name: 'roleName',
+            message: "Enter the role title:"
+        },
+        {
+            type: 'input',
+            name: 'roleSalary',
+            message: "Enter the role salary:"
+        },
+        {
+            type: 'list',
+            name: 'roleDepartment',
+            message: "Select the department for this role:",
+            choices: departmentList
+        }
+    ])
+    .then(answers => { 
+        // find the department from the prompt in the query table
+        let departmentRow = rows.find(Object => Object.department_name === answers.roleDepartment);
+        // set the department id from the query table
+        let departmentId = departmentRow.department_id;
+        const newRole = {'title': answers.roleName, 'salary': answers.roleSalary, 'department_id': departmentId};
+        addRole(newRole);
+        console.log(answers.roleName + ' added to role table.')
+        actionChoice();
+    })
+})
 }
 
 // A function for the add employee prompts

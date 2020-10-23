@@ -12,7 +12,7 @@ const rawEmployeeData = (req, res) => {
             console.table(rows)
         })
         .catch(console.log)
-        .then ( () => connection.end);
+        // .then ( () => connection.end);
 };
 
 // A function to return data in the employee table joined with the department and role tables
@@ -34,7 +34,7 @@ const allEmployees = (req, res) => {
             console.table(rows)
         })
         .catch(console.log)
-        .then ( () => connection.end );
+        // .then ( () => connection.end );
 };
 
 // A function to add an employee
@@ -54,7 +54,7 @@ const addEmployee = (body) => {
             // console.table(`${body['first_name']} ${body['last_name']} added`);
         })
         .catch(console.log)
-        .then ( () => connection.end);
+        // .then ( () => connection.end);
 };
 
 // A function to delete an employee
@@ -66,7 +66,7 @@ const deleteEmployee = (id) => {
             // console.table(`Employee ${id} deleted`);
         })
         .catch(console.log)
-        .then ( () => connection.end)
+        // .then ( () => connection.end)
 };
 
 // A function to update an employee's manager
@@ -86,7 +86,7 @@ const updateManager = (body) => {
             // console.table(`Employee ${body['employee_id']} manager updated`);
         })
         .catch(console.log)
-        .then ( () => connection.end)
+        // .then ( () => connection.end)
 };
 
 // A function to update an employee's role
@@ -106,7 +106,7 @@ const updateRole = (body) => {
             // console.table(`Employee ${body['employee_id']} role updated`);
         })
         .catch(console.log)
-        .then ( () => connection.end)
+        // .then ( () => connection.end)
 };
 
 module.exports = { rawEmployeeData, allEmployees, addEmployee, deleteEmployee, updateManager, updateRole };

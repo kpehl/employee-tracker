@@ -12,7 +12,7 @@ const rawRoles = (req, res) => {
             console.table(rows)
         })
         .catch(console.log)
-        .then ( () => connection.end);
+        // .then ( () => connection.end);
 };
 
 // A function to return data in the role table joined with the department table
@@ -30,7 +30,7 @@ const rolesDepartments = (req, res) => {
             console.table(rows)
         })
         .catch(console.log)
-        .then ( () => connection.end);
+        // .then ( () => connection.end);
 };
 
 // A function to add a role
@@ -44,7 +44,7 @@ const addRole = ( body ) => {
         // console.table(`${body['title']} role added`);
     })
     .catch(console.log)
-    .then ( () => connection.end)
+    // .then ( () => connection.end)
 };
 
 // A function to delete a role
@@ -56,7 +56,7 @@ const deleteRole = (id) => {
         // console.table(`Role ${id} deleted`);
     })
     .catch(console.log)
-    .then ( () => connection.end)
+    // .then ( () => connection.end)
 };
 
 module.exports = { rawRoles, rolesDepartments, addRole, deleteRole };

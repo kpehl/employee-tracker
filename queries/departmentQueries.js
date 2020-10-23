@@ -16,7 +16,7 @@ const queryDepartments = () => {
             console.table(rows)
         })
         .catch(console.log)
-        .then ( () => connection.end)
+        // .then ( () => connection.end)
 };
 
 // A function to get a single department by id
@@ -29,7 +29,7 @@ const queryDepartment = (id) => {
             console.table(rows)
         })
         .catch(console.log)
-        .then ( () => connection.end);
+        // .then ( () => connection.end);
 };
 
 // A function to delete a department
@@ -41,7 +41,7 @@ const deleteDepartment = (id) => {
             // console.table(`department ${id} deleted`);
         })
         .catch(console.log)
-        .then ( () => connection.end)
+        // .then ( () => connection.end)
 };
 
 // A function to add a department
@@ -54,7 +54,7 @@ const addDepartment = (name) => {
         // console.table(`${name} department added`);
     })
     .catch(console.log)
-    .then ( () => connection.end)
+    // .then ( () => connection.end)
 };
 
 module.exports = { queryDepartments, queryDepartment, addDepartment, deleteDepartment };
