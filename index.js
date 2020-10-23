@@ -15,6 +15,11 @@ const { rawRoles, rolesDepartments, addRole, deleteRole } = require('./queries/r
 connection.connect(err => {
     if (err) throw err;
     console.log('connected as id ' + connection.threadId);
+    console.log('--------------------------------------------------------------------------');
+    console.log('--------------------------------------------------------------------------');
+    console.log('-------------------Welcome to Employee Tracker----------------------------');
+    console.log('--------------------------------------------------------------------------');
+    console.log('--------------------------------------------------------------------------');
     actionChoice();
   });
 
@@ -30,7 +35,6 @@ const endConnection = () => {
 
 // A function to direct the user depending on their choice of action
 const actionChoice = () => {
-    console.log('--------------------------------------------')
     inquirer.prompt([
         // View, Add, or Update
         {
@@ -131,10 +135,19 @@ const actionChoice = () => {
         else if (answer.updateChoices === 'Employee Manager') {
             updateEmployeeManagerPrompts();
         }
+        else if (answer.deleteChoices === 'Department') {
+            deleteDepartmentPrompts();
+        }
+        else if (answer.deleteChoices === 'Role') {
+            deleteRolePrompts();
+        }
+        else if (answer.deleteChoices === 'Employee') {
+            deleteEmployeePrompts();
+        }
         else if (answer.actionChoice === 'Exit') {
             endConnection();
         }
-        else {console.log('more coming soon')}
+        else {console.log('More options coming soon')}
     })
 }
 
@@ -317,7 +330,7 @@ const updateEmployeeRolePrompts = () => {
 }
 
 const updateEmployeeManagerPrompts = () => {
-    // Get the role titles and ids and the employee names and employee ids from the database
+    // Get the employee names and employee ids from the database
     connection.query(`SELECT
         id as employee_id, 
         CONCAT(first_name, ' ', last_name) as name 
@@ -367,4 +380,90 @@ const updateEmployeeManagerPrompts = () => {
             })
         })
   })  
+}
+
+// A function for the delete department prompt
+const deleteDepartmentPrompts = () => {
+    console.log('Warning - Deleting a department will delete the roles associated with it. Employees must be manually reassigned or removed.')
+    // get the department list
+    connection.query('SELECT id as department_id, name as department_name FROM department',
+    function(err, rows) {
+        if (err) console.log(err);
+        const departmentList = rows.map(Object => Object.department_name);
+    inquirer.prompt ([
+        {
+            type: 'list',
+            name: 'department',
+            message: "Select the department to delete:",
+            choices: departmentList
+        }
+    ])
+    .then(answers => { 
+        // find the department from the prompt in the query table
+        let departmentRow = rows.find(Object => Object.department_name === answers.department);
+        // set the department id from the query table
+        let departmentId = departmentRow.department_id;
+        deleteDepartment(departmentId);
+        console.log(answers.department + ' has been deleted.')
+        actionChoice();
+    })
+})
+}
+
+// A function for the delete role prompt
+const deleteRolePrompts = () => {
+    console.log('Warning - Employees must be manually reassigned to a new role or removed.')
+    // get the department list
+    connection.query('SELECT id, title FROM role',
+    function(err, rows) {
+        if (err) console.log(err);
+        const roleList = rows.map(Object => Object.title);
+    inquirer.prompt ([
+        {
+            type: 'list',
+            name: 'role',
+            message: "Select the role to delete:",
+            choices: roleList
+        }
+    ])
+    .then(answers => { 
+        // find the role from the prompt in the query table
+        let roleRow = rows.find(Object => Object.title === answers.role);
+        // set the department id from the query table
+        let roleId = roleRow.id;
+        deleteRole(roleId);
+        console.log(answers.role + ' has been deleted.')
+        actionChoice();
+    })
+})
+}
+
+// A function for the delete employee prompt
+const deleteEmployeePrompts = () => {
+    // get the employee list
+    connection.query(`SELECT
+        id as employee_id, 
+        CONCAT(first_name, ' ', last_name) as name 
+        FROM employee`,
+    function(err, rows) {
+        if (err) console.log(err);
+        const employeeList = rows.map(Object => Object.name);
+    inquirer.prompt ([
+        {
+            type: 'list',
+            name: 'employee',
+            message: "Select the employee to delete:",
+            choices: employeeList
+        }
+    ])
+    .then(answers => { 
+        // find the employee from the prompt in the query table
+        let employeeRow = rows.find(Object => Object.name === answers.employee);
+        // set the department id from the query table
+        let employeeId = employeeRow.employee_id;
+        deleteEmployee(employeeId);
+        console.log(answers.employee + ' has been deleted.')
+        actionChoice();
+    })
+})
 }
