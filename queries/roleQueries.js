@@ -17,10 +17,10 @@ const rawRoles = (req, res) => {
 
 // A function to return data in the role table joined with the department table
 const rolesDepartments = (req, res) => {
-    const sql = `SELECT role.title AS title,
-                role.id AS role_id,
-                department.name AS department_name,
-                role.salary AS salary
+    const sql = `SELECT role.title AS "Role Title",
+                role.id AS "Role ID",
+                department.name AS "Department Name",
+                role.salary AS "Salary"
                 FROM role
                 LEFT JOIN department
                 ON role.department_id = department.id`;

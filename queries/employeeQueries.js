@@ -17,13 +17,13 @@ const rawEmployeeData = (req, res) => {
 
 // A function to return data in the employee table joined with the department and role tables
 const allEmployees = (req, res) => {
-    const sql = `SELECT e.id AS employee_id,
-                e.first_name AS first_name,
-                e.last_name AS last_name,
-                role.title AS title,
-                department.name AS department,
-                role.salary AS salary,
-                CONCAT(m.first_name, ' ', m.last_name) AS manager_name
+    const sql = `SELECT e.id AS "Employee ID",
+                e.first_name AS "First Name",
+                e.last_name AS "Last Name",
+                role.title AS "Role Title",
+                department.name AS "Department",
+                role.salary AS "Salary",
+                CONCAT(m.first_name, ' ', m.last_name) AS "Manager Name"
                 FROM employee e
                 LEFT JOIN role ON e.role_id = role.id
                 LEFT JOIN employee m ON m.id = e.manager_id

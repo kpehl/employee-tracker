@@ -9,7 +9,7 @@ const cTable = require('console.table')
 
 // A function to return all the data in the department table
 const queryDepartments = () => {
-    const sql = `SELECT * FROM department`;
+    const sql = `SELECT id AS "Department ID", name AS "Department Name" FROM department`;
     const params = [];
     connection.promise().query(sql, params)
         .then( ([rows, fields]) => {

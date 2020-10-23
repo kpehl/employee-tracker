@@ -48,7 +48,7 @@ const actionChoice = () => {
             type: 'list',
             name: 'viewChoices',
             message: 'What would you like to view?',
-            choices: ['View All Departments', 'View All Roles', 'View All Employees'],
+            choices: ['View All Departments', 'View All Roles', 'View All Employees', 'View Budget By Department'],
             when: (answers) => answers.actionChoice === 'View'
         },
         // Add a Department, Add a Role, or Add an Employee
@@ -78,7 +78,7 @@ const actionChoice = () => {
     ])
     .then( async (answer) => {
         if (answer.viewChoices === 'View All Departments') {
-            const sql = `SELECT * FROM department`;
+            const sql = `SELECT id AS "Department ID", name AS "Department Name" FROM department`;
             const params = [];
             connection.promise().query(sql, params)
                 .then( ([rows, fields]) => {
@@ -87,10 +87,10 @@ const actionChoice = () => {
                 .then(actionChoice)
         }
         else if (answer.viewChoices === 'View All Roles') {
-            const sql = `SELECT role.title AS title,
-            role.id AS role_id,
-            department.name AS department_name,
-            role.salary AS salary
+            const sql = `SELECT role.title AS "Role Title",
+            role.id AS "Role ID",
+            department.name AS "Department Name",
+            role.salary AS "Salary"
             FROM role
             LEFT JOIN department
             ON role.department_id = department.id`;
@@ -102,13 +102,13 @@ const actionChoice = () => {
                 .then(actionChoice)
         }
         else if (answer.viewChoices === 'View All Employees') {
-            const sql = `SELECT e.id AS employee_id,
-            e.first_name AS first_name,
-            e.last_name AS last_name,
-            role.title AS title,
-            department.name AS department,
-            role.salary AS salary,
-            CONCAT(m.first_name, ' ', m.last_name) AS manager_name
+            const sql = `SELECT e.id AS "Employee ID",
+            e.first_name AS "First Name",
+            e.last_name AS "Last Name",
+            role.title AS "Role Title",
+            department.name AS "Department",
+            role.salary AS "Salary",
+            CONCAT(m.first_name, ' ', m.last_name) AS "Manager Name"
             FROM employee e
             LEFT JOIN role ON e.role_id = role.id
             LEFT JOIN employee m ON m.id = e.manager_id
@@ -119,6 +119,21 @@ const actionChoice = () => {
                     console.table(rows)
                 })
                 .then(actionChoice)
+        }
+        else if (answer.viewChoices === 'View Budget By Department') {
+                const sql = `SELECT department.name AS "Department Name", 
+                SUM(salary) AS "Department Budget",
+                COUNT(role.title) AS "Employee Count"
+                FROM employee 
+                LEFT JOIN role ON employee.role_id = role.id 
+                LEFT JOIN department ON role.department_id = department.id
+                GROUP BY department.name`;
+                const params = [];
+                connection.promise().query(sql, params)
+                    .then( ([rows, fields]) => {
+                        console.table(rows)
+                    })
+                    .then(actionChoice)
         }
         else if (answer.addChoices === 'Add a Department') {
             addDepartmentPrompts();
