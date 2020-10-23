@@ -34,7 +34,7 @@ const allEmployees = (req, res) => {
             console.table(rows)
         })
         .catch(console.log)
-        .then ( () => connection.end);
+        .then ( () => connection.end );
 };
 
 // A function to add an employee

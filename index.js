@@ -10,7 +10,6 @@ const cTable = require('console.table')
 const { queryDepartments, deleteDepartment, addDepartment, queryDepartment } = require('./queries/departmentQueries');
 const { rawEmployeeData, allEmployees, addEmployee, deleteEmployee, updateManager, updateRole } = require('./queries/employeeQueries');
 const { rawRoles, rolesDepartments, addRole, deleteRole } = require('./queries/roleQueries');
-const { getMaxListeners } = require('./db/database');
 
 // Open a connection to the database
 connection.connect(err => {
@@ -25,48 +24,16 @@ const endConnection = () => {
     console.log('connection ended');
 }
 
-// A function to test the SQL functions
-const sqlFunctionTests = () => {
-    // Department Query Tests
-    queryDepartments();
-    queryDepartment(3);
-    deleteDepartment(3);
-    queryDepartments();
-    const newDepartment = 'Morale';
-    addDepartment(newDepartment);
-    queryDepartments();
-    // Role Query Tests
-    rawRoles();
-    rolesDepartments();
-    const newRole = ['Legal Aide', 75000, 4];
-    const newRoleObj = {'title': 'Legal Aide', 'salary': 75000, 'department_id': 4};
-    addRole(newRoleObj)
-    deleteRole(2);
-    rolesDepartments();
-    // Employee Query Tests
-    rawEmployeeData();
-    allEmployees();
-    const newEmployee = {'first_name': 'Tammar', 'last_name': 'Galal', 'role_id': 4};
-    addEmployee(newEmployee);
-    deleteEmployee(3);
-    allEmployees();
-    const updateManagerObj = {'employee_id': 1, 'manager_id': 6};
-    updateManager(updateManagerObj);
-    const updateRoleObj = {'employee_id': 1, 'role_id': 7}
-    updateRole(updateRoleObj);
-    allEmployees();
-};
-
 // A function to direct the user depending on their choice of action
 const actionChoice = () => {
     console.log('--------------------------------------------')
-    return inquirer.prompt([
+    inquirer.prompt([
         // View, Add, or Update
         {
             type: 'list',
             name: 'actionChoice',
             message: 'Would you like to:',
-            choices: ['View', 'Add', 'Update']
+            choices: ['View', 'Add', 'Update', 'Delete', 'Exit']
         },
         // View All Departments, View All Roles, or View All Employees
         {
@@ -91,34 +58,43 @@ const actionChoice = () => {
             message: 'What would you like to update?',
             choices: ['Employee Role', 'Employee Manager'],
             when: (answers) => answers.actionChoice === 'Update'
+        },
+        // Delete an Employee, Role, or Department
+        {
+            type: 'list',
+            name: 'deleteChoices',
+            message: 'What would you like to delete?',
+            choices: ['Department', 'Role', 'Employee'],
+            when: (answers) => answers.actionChoice === 'Delete'
         }
     ])
     .then( answer => {
-        if (answer.actionChoice === 'View' && answer.viewChoices === 'View All Departments') {queryDepartments()}
-        else if (answer.actionChoice === 'View' && answer.viewChoices === 'View All Roles') {rolesDepartments()}
-        else if (answer.actionChoice === 'View' && answer.viewChoices === 'View All Employees') {allEmployees()}
-        else if (answer.actionChoice === 'Add' && answer.addChoices === 'Add an Employee') {addEmployeePrompts()}
-        else {console.log('more coming soon')}
-    })
-}
-
-// A function to prompt to continue or quit
-const promptContinue = () => {
-    return inquirer.prompt([
-        {
-            type: 'confirm',
-            name: 'quitOrContinue',
-            message: 'Would you like to continue?'
+        if (answer.actionChoice === 'View' && answer.viewChoices === 'View All Departments') {
+            queryDepartments();
+            console.log('--------------------------------------------------------------------------')
+            actionChoice();
         }
-    ])
-    .then((answer) => {
-        if (answer.quitOrContinue === true) {actionChoice()}
-        else {
-            endConnection()
+        else if (answer.actionChoice === 'View' && answer.viewChoices === 'View All Roles') {
+            rolesDepartments();
+            console.log('--------------------------------------------------------------------------')
+            actionChoice();
+        }
+        else if (answer.actionChoice === 'View' && answer.viewChoices === 'View All Employees') {
+            allEmployees();
+            console.log('--------------------------------------------------------------------------')
+            actionChoice();
+        }
+        else if (answer.actionChoice === 'Add' && answer.addChoices === 'Add an Employee') {
+            addEmployeePrompts();
+        }
+        else if (answer.actionChoice === 'Exit') {
+            endConnection();
             console.log('--------------------------------------------------------------------------')
             console.log('---------------------Press Ctrl C to Exit---------------------------------')
             console.log('--------------------------------------------------------------------------')
+            return;
         }
+        else {console.log('more coming soon')}
     })
 }
 

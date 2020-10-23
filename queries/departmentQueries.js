@@ -16,7 +16,7 @@ const queryDepartments = () => {
             console.table(rows)
         })
         .catch(console.log)
-        .then ( () => connection.end);
+        .then ( () => connection.end)
 };
 
 // A function to get a single department by id
