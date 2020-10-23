@@ -252,7 +252,7 @@ const addEmployeePrompts = () => {
         let managerId = null;
         if (answers.managerName === 'None') {managerId = null}
         else {
-            managerRow = rows.find(Object => Object.manager_name === answers.managerName);
+            let managerRow = rows.find(Object => Object.manager_name === answers.managerName);
             // console.log(managerRow)
             managerId = managerRow.manager_id;
         } 
@@ -313,5 +313,58 @@ const updateEmployeeRolePrompts = () => {
           console.log(answers.employee + ' role changed to ' + answers.role +'.')
           actionChoice();
       })
+  })  
+}
+
+const updateEmployeeManagerPrompts = () => {
+    // Get the role titles and ids and the employee names and employee ids from the database
+    connection.query(`SELECT
+        id as employee_id, 
+        CONCAT(first_name, ' ', last_name) as name 
+        FROM employee`,
+        function (err, rows) {
+            if (err) console.log(err);
+    // Set up the employee list for the prompt
+    const employeeList = rows.map(Object => Object.name);
+      inquirer.prompt ([
+          {
+              type: 'list',
+              name: 'employee',
+              message: "Select Employee:",
+              choices: employeeList
+          }
+        ])
+        .then(employeeInfo => {
+            const managerList = employeeList.filter(currentEmployee => currentEmployee !== employeeInfo.employee)
+            managerList.unshift('None')
+
+            inquirer.prompt ([
+                {
+                    type: 'list',
+                    name: 'manager',
+                    message: "Select Assigned Manager:",
+                    choices: managerList
+                }
+            ])
+            .then(managerInfo => {
+                // find the employee from the prompt in the query table
+                let employeeRow = rows.find(Object => Object.name === employeeInfo.employee);
+                // set the employee id from the query table
+                let employeeId = employeeRow.employee_id;
+                // Get the manager id
+                let managerId = null;
+                if (managerInfo.manager === 'None') {managerId = null}
+                else {
+                    // find the manager from the prompt in the query table
+                    let managerRow = rows.find(Object => Object.name === managerInfo.manager);
+                    // set the manager id from the query table
+                    managerId = managerRow.employee_id;
+                }
+                const updatedManager = {'manager_id': managerId, 'employee_id': employeeId};
+                updateManager(updatedManager);
+                console.log(employeeInfo.employee + "'s manager changed to " + managerInfo.manager +'.')
+                actionChoice();
+            })
+        })
   })  
 }
