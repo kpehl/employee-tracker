@@ -74,19 +74,47 @@ const actionChoice = () => {
     ])
     .then( async (answer) => {
         if (answer.viewChoices === 'View All Departments') {
-            queryDepartments();
-            console.log('--------------------------------------------------------------------------')
-            actionChoice();
+            const sql = `SELECT * FROM department`;
+            const params = [];
+            connection.promise().query(sql, params)
+                .then( ([rows, fields]) => {
+                    console.table(rows)
+                })
+                .then(actionChoice)
         }
         else if (answer.viewChoices === 'View All Roles') {
-            rolesDepartments();
-            console.log('--------------------------------------------------------------------------')
-            actionChoice();
+            const sql = `SELECT role.title AS title,
+            role.id AS role_id,
+            department.name AS department_name,
+            role.salary AS salary
+            FROM role
+            LEFT JOIN department
+            ON role.department_id = department.id`;
+            const params = [];
+            connection.promise().query(sql, params)
+                .then( ([rows, fields]) => {
+                    console.table(rows)
+                })
+                .then(actionChoice)
         }
         else if (answer.viewChoices === 'View All Employees') {
-            allEmployees();
-            console.log('--------------------------------------------------------------------------')
-            actionChoice();
+            const sql = `SELECT e.id AS employee_id,
+            e.first_name AS first_name,
+            e.last_name AS last_name,
+            role.title AS title,
+            department.name AS department,
+            role.salary AS salary,
+            CONCAT(m.first_name, ' ', m.last_name) AS manager_name
+            FROM employee e
+            LEFT JOIN role ON e.role_id = role.id
+            LEFT JOIN employee m ON m.id = e.manager_id
+            LEFT JOIN department ON role.department_id = department.id`;
+            const params = [];
+            connection.promise().query(sql, params)
+                .then( ([rows, fields]) => {
+                    console.table(rows)
+                })
+                .then(actionChoice)
         }
         else if (answer.addChoices === 'Add a Department') {
             addDepartmentPrompts();
@@ -102,6 +130,22 @@ const actionChoice = () => {
         }
         else {console.log('more coming soon')}
     })
+}
+
+// A function for viewing all departments
+const viewAllDepartments = () => {
+    console.log('All Departments');
+    queryDepartments();
+}
+// A function for viewing all roles
+const viewAllRoles = () => {
+    console.log('All Roles');
+    rolesDepartments();
+}
+// A function for viewing all employees
+const viewAllEmployees = () => {
+    console.log('All Employees');
+    allEmployees();
 }
 
 // A function for the add department prompt
