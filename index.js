@@ -19,7 +19,7 @@ const { rawRoles, rolesDepartments, addRole, deleteRole } = require('./queries/r
 connection.connect(err => {
     if (err) throw err;
     console.log(chalk.cyanBright(figlet.textSync('Employee Tracker', {
-        font: 'Slant',
+        font: 'Small Slant',
         horizontalLayout: 'default',
         verticalLayout: 'default',
         width: 80,
@@ -33,7 +33,7 @@ connection.connect(err => {
 const endConnection = () => {
     connection.end();
     console.log(chalk.cyanBright(figlet.textSync('Goodbye', {
-        font: 'Slant',
+        font: 'Small Slant',
         horizontalLayout: 'default',
         verticalLayout: 'default',
         width: 80,
