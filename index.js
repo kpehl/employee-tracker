@@ -6,8 +6,10 @@ const connection = require('./db/database');
 const inquirer = require('inquirer');
 // // // console.table for printing SQL data
 const cTable = require('console.table')
-// // // chalk for font colors
+// // // chalk for console log font colors
 const chalk = require('chalk');
+// // // figlet for the ascii header and footer
+const figlet = require('figlet');
 // // // Functions for the MySQL Queries
 const { queryDepartments, deleteDepartment, addDepartment, queryDepartment } = require('./queries/departmentQueries');
 const { rawEmployeeData, allEmployees, addEmployee, deleteEmployee, updateManager, updateRole } = require('./queries/employeeQueries');
@@ -16,23 +18,27 @@ const { rawRoles, rolesDepartments, addRole, deleteRole } = require('./queries/r
 // Open a connection to the database
 connection.connect(err => {
     if (err) throw err;
-    console.log('connected as id ' + connection.threadId);
-    console.log('--------------------------------------------------------------------------');
-    console.log('--------------------------------------------------------------------------');
-    console.log('-------------------Welcome to Employee Tracker----------------------------');
-    console.log('--------------------------------------------------------------------------');
-    console.log('--------------------------------------------------------------------------');
+    console.log(chalk.cyanBright(figlet.textSync('Employee Tracker', {
+        font: 'Slant',
+        horizontalLayout: 'default',
+        verticalLayout: 'default',
+        width: 80,
+        whitespaceBreak: true
+    })));
+    console.log('connected to database as id ' + connection.threadId);
     actionChoice();
   });
 
 // A function to close the connection
 const endConnection = () => {
     connection.end();
-    console.log('--------------------------------------------------------------------------');
-    console.log('--------------------------------------------------------------------------');
-    console.log('---------------------------Goodbye----------------------------------------');
-    console.log('--------------------------------------------------------------------------');
-    console.log('--------------------------------------------------------------------------');
+    console.log(chalk.cyanBright(figlet.textSync('Goodbye', {
+        font: 'Slant',
+        horizontalLayout: 'default',
+        verticalLayout: 'default',
+        width: 80,
+        whitespaceBreak: true
+    })));
 }
 
 // A function to direct the user depending on their choice of action
