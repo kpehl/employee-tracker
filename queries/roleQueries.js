@@ -35,7 +35,7 @@ const rolesDepartments = (req, res) => {
 
 // A function to add a role
 const addRole = ( body ) => {
-    console.log(body)
+    // console.log(body)
     const sql = `INSERT INTO role (title, salary, department_id)
                 VALUES (?, ?, ?)`;
     const params = [body['title'], body['salary'], body['department_id']];

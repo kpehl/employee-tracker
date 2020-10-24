@@ -6,6 +6,8 @@ const connection = require('./db/database');
 const inquirer = require('inquirer');
 // // // console.table for printing SQL data
 const cTable = require('console.table')
+// // // chalk for font colors
+const chalk = require('chalk');
 // // // Functions for the MySQL Queries
 const { queryDepartments, deleteDepartment, addDepartment, queryDepartment } = require('./queries/departmentQueries');
 const { rawEmployeeData, allEmployees, addEmployee, deleteEmployee, updateManager, updateRole } = require('./queries/employeeQueries');
@@ -177,7 +179,7 @@ const addDepartmentPrompts = () => {
     ])
     .then(answers => { 
         addDepartment(answers.departmentName);
-        console.log(answers.departmentName + ' added to department table.')
+        console.log(chalk.green(answers.departmentName + ' added to department table.'))
         actionChoice();
     })
 }
@@ -214,7 +216,7 @@ const addRolePrompts = () => {
         let departmentId = departmentRow.department_id;
         const newRole = {'title': answers.roleName, 'salary': answers.roleSalary, 'department_id': departmentId};
         addRole(newRole);
-        console.log(answers.roleName + ' added to role table.')
+        console.log(chalk.green(answers.roleName + ' added to role table.'))
         actionChoice();
     })
 })
@@ -288,7 +290,7 @@ const addEmployeePrompts = () => {
         const newEmployee = {'first_name': answers.employeeFirstName, 'last_name': answers.employeeLastName, 'role_id': roleId, 'manager_id': managerId }
         // console.log(newEmployee)
         addEmployee(newEmployee);
-        console.log(answers.employeeFirstName + ' ' + answers.employeeLastName + ' added to employee table.')
+        console.log(chalk.green(answers.employeeFirstName + ' ' + answers.employeeLastName + ' added to employee table.'))
         actionChoice();
     })
 })
@@ -338,7 +340,7 @@ const updateEmployeeRolePrompts = () => {
           let employeeId = employeeRow.employee_id;
           const newRole = {'employee_id': employeeId, 'role_id': roleId};
           updateRole(newRole);
-          console.log(answers.employee + ' role changed to ' + answers.role +'.')
+          console.log(chalk.yellow(answers.employee + ' role changed to ' + answers.role +'.'))
           actionChoice();
       })
   })  
@@ -390,7 +392,7 @@ const updateEmployeeManagerPrompts = () => {
                 }
                 const updatedManager = {'manager_id': managerId, 'employee_id': employeeId};
                 updateManager(updatedManager);
-                console.log(employeeInfo.employee + "'s manager changed to " + managerInfo.manager +'.')
+                console.log(chalk.yellow(employeeInfo.employee + "'s manager changed to " + managerInfo.manager +'.'))
                 actionChoice();
             })
         })
@@ -399,7 +401,7 @@ const updateEmployeeManagerPrompts = () => {
 
 // A function for the delete department prompt
 const deleteDepartmentPrompts = () => {
-    console.log('Warning - Deleting a department will delete the roles associated with it. Employees must be manually reassigned or removed.')
+    console.log(chalk.red('Warning - Deleting a department will delete the roles associated with it. Employees must be manually reassigned or removed.'))
     // get the department list
     connection.query('SELECT id as department_id, name as department_name FROM department',
     function(err, rows) {
@@ -419,7 +421,7 @@ const deleteDepartmentPrompts = () => {
         // set the department id from the query table
         let departmentId = departmentRow.department_id;
         deleteDepartment(departmentId);
-        console.log(answers.department + ' has been deleted.')
+        console.log(chalk.red(answers.department + ' has been deleted.'))
         actionChoice();
     })
 })
@@ -427,7 +429,7 @@ const deleteDepartmentPrompts = () => {
 
 // A function for the delete role prompt
 const deleteRolePrompts = () => {
-    console.log('Warning - Employees must be manually reassigned to a new role or removed.')
+    console.log(chalk.red('Warning - Employees must be manually reassigned to a new role or removed.'))
     // get the department list
     connection.query('SELECT id, title FROM role',
     function(err, rows) {
@@ -447,7 +449,7 @@ const deleteRolePrompts = () => {
         // set the department id from the query table
         let roleId = roleRow.id;
         deleteRole(roleId);
-        console.log(answers.role + ' has been deleted.')
+        console.log(chalk.red(answers.role + ' has been deleted.'))
         actionChoice();
     })
 })
@@ -477,7 +479,7 @@ const deleteEmployeePrompts = () => {
         // set the department id from the query table
         let employeeId = employeeRow.employee_id;
         deleteEmployee(employeeId);
-        console.log(answers.employee + ' has been deleted.')
+        console.log(chalk.red(answers.employee + ' has been deleted.'))
         actionChoice();
     })
 })
